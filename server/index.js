@@ -54,7 +54,7 @@ var notifyAboutNewGameSate = function(game_id){
 
     var i=1; 
     _.forEach(game.endpoints, function(endpoint){
-        endpoint.sse(JSON.stringify(game.state)+'\n\n');
+        endpoint.sse("data: "+JSON.stringify(game.state)+'\n\n');
         console.log('Notifing endpoint %s in game %s.', i++,  game_id);
     });
 }

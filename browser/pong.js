@@ -10,6 +10,11 @@ var context = canvas.getContext('2d');
 var player = new Player();
 var player1 = new Player1();
 var ball = new Ball(200, 300);
+var downPoints = 0
+var upPoints = 0
+var gameId = 0
+var started = 0
+var shouldstop = 0
 
 var keysDown = {};
 
@@ -18,19 +23,26 @@ $.post("http://localhost:3000/game", function( data ) {
     console.log("Room id: " + data.id);
 
     var evtSource = new EventSource("http://localhost:3000/events/" + data.id);
-
+    player.pin = data.player_1.pin;
+    player1.pin = data.player_2.pin
+    document.getElementById("pin1").textContent += player.pin
+    document.getElementById("pin2").textContent += player1.pin
+    gameId = data.id
     evtSource.onmessage = function(m) {
        msg = JSON.parse(m.data);
-       player.move(msg.player_1.position)
-       player1.move(msg.player_2.position)
+       console.log(msg.player_1.position);
+       console.log(msg.player_2.position);
+       player.move(msg.player_1.position);
+       player1.move(msg.player_2.position);
+       if(started == 0 && msg.player_1.joined == true && msg.player_2.joined == true)
+           started = 1;
+
 
     }
 
 
 
     }
-
-  //
 
   );
 
@@ -45,15 +57,15 @@ var render = function () {
 };
 
 var update = function () {
-    player.update();
-    player1.update();
+    if(started == 1 && shouldstop == 0){
     ball.update(player.paddle, player1.paddle);
+}
 };
 
 var step = function () {
     update();
     render();
-    animate(step);
+    animate(step)
 };
 
 function Paddle(x, y, width, height) {
@@ -71,8 +83,7 @@ Paddle.prototype.render = function () {
 };
 
 Paddle.prototype.move = function (x, y) {
-    this.x += x;
-    this.y += y;
+    this.x = x * 4;
     this.x_speed = x;
     this.y_speed = y;
     if (this.x < 0) {
@@ -92,24 +103,13 @@ Player1.prototype.render = function () {
     this.paddle.render();
 };
 
-Player1.prototype.update = function (ball) {
-    for (var key in keysDown) {
-        var value = Number(key);
-        if (value == 65) {
-            this.paddle.move(-4, 0);
-        } else if (value == 68) {
-            this.paddle.move(4, 0);
-        } else {
-            this.paddle.move(0, 0);
-        }
-    }
-};
-
 Player1.prototype.move = function(x){
+    console.log("[Player1] moving");
     this.paddle.move(x,0);
 }
 
 Player.prototype.move = function(x){
+    console.log("[Player] moving");
     this.paddle.move(x,0);
 }
 
@@ -121,18 +121,7 @@ Player.prototype.render = function () {
     this.paddle.render();
 };
 
-Player.prototype.update = function () {
-    for (var key in keysDown) {
-        var value = Number(key);
-        if (value == 37) {
-            this.paddle.move(-4, 0);
-        } else if (value == 39) {
-            this.paddle.move(4, 0);
-        } else {
-            this.paddle.move(0, 0);
-        }
-    }
-};
+
 
 function Ball(x, y) {
     this.x = x;
@@ -165,28 +154,44 @@ Ball.prototype.update = function (paddle1, paddle2) {
     }
 
     if (this.y < 0 || this.y > 600) {
+        console.log("Goal!");
+        if(this.y < 0){
+            $.post("http://localhost:3000/score/" + gameId + "/" + player.pin);
+            downPoints += 1;
+            document.getElementById("point1").textContent = downPoints
+        }else{
+            upPoints += 1;
+            document.getElementById("point2").textContent = upPoints
+            $.post("http://localhost:3000/score/" + gameId + "/" + player1.pin);
+        }
+        if(Math.abs(downPoints - upPoints) > 2){
+                $.post("http://localhost:3000/finish/" + gameId);
+                shouldstop = 1;
+                document.getElementById("endinfo").textContent = "Koniec!"
+        }
         this.x_speed = 0;
         this.y_speed = 3;
         this.x = 200;
         this.y = 300;
+
     }
 
     if (top_y > 300) {
         if (top_y < (paddle1.y + paddle1.height) && bottom_y > paddle1.y && top_x < (paddle1.x + paddle1.width) && bottom_x > paddle1.x) {
             this.y_speed = -3;
-            this.x_speed += (paddle1.x_speed / 2);
+            this.x_speed = 3*(paddle1.x - top_x)/(paddle1.x - paddle1.width);
             this.y += this.y_speed;
         }
     } else {
         if (top_y < (paddle2.y + paddle2.height) && bottom_y > paddle2.y && top_x < (paddle2.x + paddle2.width) && bottom_x > paddle2.x) {
             this.y_speed = 3;
-            this.x_speed += (paddle2.x_speed / 2);
+            this.x_speed = 3*(paddle2.x - top_x)/(paddle2.x - paddle2.width);
             this.y += this.y_speed;
         }
     }
 };
 
-document.getElementById("game_col").appendChild(canvas);
+document.body.appendChild(canvas);
 animate(step);
 
 window.addEventListener("keydown", function (event) {

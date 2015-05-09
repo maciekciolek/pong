@@ -14,13 +14,26 @@ var ball = new Ball(200, 300);
 var keysDown = {};
 
 $.post("http://localhost:3000/game", function( data ) {
-  console.log( "Data Loaded: " + JSON.stringify(data));});
+    console.log( "Data Loaded: " + JSON.stringify(data));
+    console.log("Room id: " + data.id);
 
-var evtSource = new EventSource("https://localhost:3000"); 
+    var evtSource = new EventSource("http://localhost:3000/events/" + data.id); 
 
-evtSource.onmessage = function(m) {
-  console.log( "Event occured" + JSON.stringify(m.data));
-}
+    evtSource.onmessage = function(m) {
+       player.move(m.data.player_1.position)
+       player1.move(m.data.player_2.position)
+       
+    }
+
+
+
+    }
+  
+  //
+
+  );
+
+
 
 var render = function () {
     context.fillStyle = "#FF00FF";
@@ -90,6 +103,14 @@ Player1.prototype.update = function (ball) {
         }
     }
 };
+
+Player1.move = function(x){
+    this.paddle.move(x,0);
+}
+
+Player.move = function(x){
+    this.paddle.move(x,0);
+}
 
 function Player() {
     this.paddle = new Paddle(175, 580, 50, 10);

@@ -7,5 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Adam Zima, Tomasz Dyczek, Maciej Ciołek",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.12.3",
+    "http": "0.0.0",
+    "path": "^0.11.14",
+    "server-sent-events": "0.0.4",
+    "underscore": "^1.8.3"
+  }
 }

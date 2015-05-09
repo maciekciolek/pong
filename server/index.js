@@ -54,7 +54,7 @@ var notifyAboutNewGameSate = function(game_id){
 
     var i=1; 
     _.forEach(game.endpoints, function(endpoint){
-        endpoint.sse(JSON.stringify(game.state));
+        endpoint.sse("data: "+JSON.stringify(game.state)+'\n\n');
         console.log('Notifing endpoint %s in game %s.', i++,  game_id);
     });
 }
@@ -150,7 +150,7 @@ app.post('/join/:pin', function (req, res) {
 
         }else if(state.player_2.pin == pin){
             state.player_2.joined = true;
-            console.log('Player 1 with pin %s joined to game %s.', pin, game_id); 
+            console.log('Player 2 with pin %s joined to game %s.', pin, game_id); 
             res.status(200);
             res.json(state);
 

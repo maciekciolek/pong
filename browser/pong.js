@@ -17,18 +17,19 @@ $.post("http://localhost:3000/game", function( data ) {
     console.log( "Data Loaded: " + JSON.stringify(data));
     console.log("Room id: " + data.id);
 
-    var evtSource = new EventSource("http://localhost:3000/events/" + data.id); 
+    var evtSource = new EventSource("http://localhost:3000/events/" + data.id);
 
     evtSource.onmessage = function(m) {
-       player.move(m.data.player_1.position)
-       player1.move(m.data.player_2.position)
-       
-    }
-
-
+       msg = JSON.parse(m.data);
+       player.move(msg.player_1.position)
+       player1.move(msg.player_2.position)
 
     }
-  
+
+
+
+    }
+
   //
 
   );
@@ -104,11 +105,11 @@ Player1.prototype.update = function (ball) {
     }
 };
 
-Player1.move = function(x){
+Player1.prototype.move = function(x){
     this.paddle.move(x,0);
 }
 
-Player.move = function(x){
+Player.prototype.move = function(x){
     this.paddle.move(x,0);
 }
 

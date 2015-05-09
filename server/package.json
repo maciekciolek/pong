@@ -1,0 +1,11 @@
+{
+  "name": "tir-backend",
+  "version": "1.0.0",
+  "description": "The best application ever.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam Zima, Tomasz Dyczek, Maciej Ciołek",
+  "license": "ISC"
+}

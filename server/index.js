@@ -3,9 +3,12 @@ var express = require('express'),
     os = require('os'), 
     path = require('path'),
     sse = require('server-sent-events'),
-    _ = require("underscore");
+    _ = require("underscore"),
+	cors = require('cors');
 
 var app = express();
+
+app.use(cors());
 
 var games = {};
 var pins = {};
@@ -86,7 +89,7 @@ var finishGame = function(game_id){
     notifyAboutNewGameSate(game_id);
 }
 
-app.get('/events/:game_id', sse, function(req, res) {
+app.get('/api/events/:game_id', sse, function(req, res) {
     var game_id = req.params.game_id;
     if(game_id in games){
         games[game_id].endpoints.push(res);
@@ -95,7 +98,7 @@ app.get('/events/:game_id', sse, function(req, res) {
 });
 
 
-app.post('/game', function (req, res) {
+app.post('/api/game', function (req, res) {
     var game = createNewGame();
     games[game.id] = {
         state: game,
@@ -108,7 +111,7 @@ app.post('/game', function (req, res) {
     res.json(game);
 });
 
-app.post('/score/:game_id/:pin', function (req, res) {
+app.post('/api/score/:game_id/:pin', function (req, res) {
     var game_id = req.params.game_id;
     var pin = req.params.pin;
 
@@ -122,7 +125,7 @@ app.post('/score/:game_id/:pin', function (req, res) {
 });
 
 
-app.post('/finish/:game_id', function (req, res) {
+app.post('/api/finish/:game_id', function (req, res) {
     var game_id = req.params.game_id;
 
     if(game_id in games){
@@ -134,7 +137,7 @@ app.post('/finish/:game_id', function (req, res) {
     res.json({});
 });
 
-app.post('/join/:pin', function (req, res) {
+app.post('/api/join/:pin', function (req, res) {
     var pin = req.params.pin;
     if(pin in pins){
         var game_id = pins[pin];
@@ -166,7 +169,7 @@ app.post('/join/:pin', function (req, res) {
 });
 
 
-app.post('/move/:pin/:position', function (req, res) {
+app.post('/api/move/:pin/:position', function (req, res) {
     var pin = req.params.pin;
     var position = req.params.position;
     if(pin in pins){

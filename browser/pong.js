@@ -18,11 +18,11 @@ var shouldstop = 0
 
 var keysDown = {};
 
-$.post("http://localhost:3000/game", function( data ) {
+$.post("http://91.240.28.246:8090/api/game", function( data ) {
     console.log( "Data Loaded: " + JSON.stringify(data));
     console.log("Room id: " + data.id);
 
-    var evtSource = new EventSource("http://localhost:3000/events/" + data.id);
+    var evtSource = new EventSource("http://91.240.28.246:8090/api/events/" + data.id);
     player.pin = data.player_1.pin;
     player1.pin = data.player_2.pin
     document.getElementById("pin1").textContent += player.pin
@@ -156,16 +156,16 @@ Ball.prototype.update = function (paddle1, paddle2) {
     if (this.y < 0 || this.y > 600) {
         console.log("Goal!");
         if(this.y < 0){
-            $.post("http://localhost:3000/score/" + gameId + "/" + player.pin);
+            $.post("http://91.240.28.246:8090/api/score/" + gameId + "/" + player.pin);
             downPoints += 1;
             document.getElementById("point1").textContent = downPoints
         }else{
             upPoints += 1;
             document.getElementById("point2").textContent = upPoints
-            $.post("http://localhost:3000/score/" + gameId + "/" + player1.pin);
+            $.post("http://91.240.28.246:8090/api/score/" + gameId + "/" + player1.pin);
         }
         if(Math.abs(downPoints - upPoints) > 2){
-                $.post("http://localhost:3000/finish/" + gameId);
+                $.post("http://91.240.28.246:8090/api/finish/" + gameId);
                 shouldstop = 1;
                 document.getElementById("endinfo").textContent = "Koniec!"
         }

@@ -9,6 +9,7 @@
   "author": "Adam Zima, Tomasz Dyczek, Maciej Ciołek",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.6.0",
     "express": "^4.12.3",
     "http": "0.0.0",
     "path": "^0.11.14",

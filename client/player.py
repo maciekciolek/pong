@@ -6,49 +6,78 @@ import threading
 from pprint import pprint
 import json
 
-address = 'www.onet.pl'
+import serial
+
+ser = serial.Serial('/dev/ttyS0', 38400)
+ser.write(chr(0))
+ser.write(chr(128 + 64 + 16))
+
+address = ''
 pin = ''
 player = ''
 score = 0
 
-def read_move():
-    move = 0
-    keypress = ord(getch.getch())
+def read_move(old_position):
+    response = ser.read(1)
+    if len(response) > 0:
+        if (ch >= 64 and ch <= 127):
+            return (int) ((ch - 64) * 1.5)
 
-    print keypress
-    if keypress == 97:
-        move = -1
-    elif keypress == 100:
-        move = 1
-
-    return move
+    return old_position
 
 def read_pin():
-    return raw_input('Gimme pin: ')
+    global ser
+    pin = ''
+    last_knob_position = None
+
+    while len(pin) < 4:
+        response = ser.read(1)
+        if len(response)>0:
+            ch = ord(response)
+            print ch
+
+            # knob moved
+            if (ch >= 64 and ch <= 127):
+                last_knob_position = ch - 64
+
+            # button pressed
+            if (ch == 128 + 64 + 2 + 1) and last_knob_position != None:
+                pin += str((int) (ch / 16) + 1)
+
+    return pin
 
 def set_new_score(score):
     print 'You scored: ' + str(score)
 
+    # Do we want to keep this?
+    ser.write(32 + 1)
+    sleep(3)
+    ser.write(32 + 0)
+
 def set_winner(winner):
+    global ser
     if winner == pin:
         print 'You won!'
+        ser.write(chr(64 + 12))
     else:
         print 'You lost!'
+        ser.write(chr(64 + 48))
 
 def play():
+    global ser
+
     position = 50;
+    old_position = 50;
 
     while True:
-        move = read_move()
+        position = read_move(old_position)
 
-        if move == -1:
-            position = max(0, position - 1)
-        elif move == 1:
-            position = min(100, position + 1)
+        if (position != old_position):
+            old_position = position
 
-        r = requests.post(address + '/move' + '/' + pin + '/' + str(position))
-        print position
-        print r
+            r = requests.post(address + '/move' + '/' + pin + '/' + str(position))
+            print position
+            print r
 
 def join_game():
     global pin

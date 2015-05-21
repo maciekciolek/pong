@@ -1,33 +1,47 @@
 <html>
-	<head>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>	
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>	
-		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">	
-	</head>
-	<body>
+		<head>
+				<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>	
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>	
+				<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">	
+				<style type="text/css">
+						#workspace {
+								width:400px;
+								height:600px;
+								margin: 0 auto;
+						}
 
+						#endinfo{
+								display:none;
+						}
+				</style>
+		</head>
+		<body>
 
-	<h1>Pong</h1>
-	<h1 id = "endinfo"></h1>
-	<table class="table">
-        <thead>
-        	<tr>
-               <th>Player1(down)</th>
-        		<th>Player2(top)</th>
-      		</tr>
-      	</thead>
-      	<tbody>
-      		<tr>
-               <td id="pin1">Pin1: </td>
-        		<td id="pin2">Pin2: </td>
-      		</tr>
-      		<tr>
-               <td id="point1">0</td>
-        		<td id="point2">0</td>
-      		</tr>
-      	</tbody>
-		
+				<div class="container">
+						<h1>Pong</h1>
+						<h1 id = "endinfo" class="alert alert-success"></h1>
 
-  		<script src="pong.js"></script>
-	</body>
+						<table class="table">
+								<thead>
+										<tr>
+												<th>Player1(down)</th>
+												<th>Player2(top)</th>
+										</tr>
+								</thead>
+								<tbody>
+										<tr>
+												<td id="pin1">Pin1: </td>
+												<td id="pin2">Pin2: </td>
+										</tr>
+										<tr>
+												<td id="point1">0</td>
+												<td id="point2">0</td>
+										</tr>
+								</tbody>
+						</table>
+				</div>
+
+				<div id="workspace"></div>
+				<script src="pong.js"></script>
+		</body>
 </html>

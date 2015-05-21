@@ -1,7 +1,10 @@
 var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / 60)
     };
-var canvas = document.createElement("canvas");
+
+var canvas = $('<canvas/>').get(0);
+$('#workspace').append(canvas);
+//var canvas = $('#workspace >  canvas').get(0);
 var width = 400;
 var height = 600;
 canvas.width = width;
@@ -47,9 +50,8 @@ $.post("http://91.240.28.246:8090/api/game", function( data ) {
   );
 
 
-
 var render = function () {
-    context.fillStyle = "#FF00FF";
+    context.fillStyle = "#106D8C";
     context.fillRect(0, 0, width, height);
     player.render();
     player1.render();
@@ -78,7 +80,7 @@ function Paddle(x, y, width, height) {
 }
 
 Paddle.prototype.render = function () {
-    context.fillStyle = "#0000FF";
+    context.fillStyle = "#232429";
     context.fillRect(this.x, this.y, this.width, this.height);
 };
 
@@ -133,7 +135,7 @@ function Ball(x, y) {
 Ball.prototype.render = function () {
     context.beginPath();
     context.arc(this.x, this.y, 5, 2 * Math.PI, false);
-    context.fillStyle = "#000000";
+    context.fillStyle = "#F2FFFF";
     context.fill();
 };
 
@@ -167,7 +169,7 @@ Ball.prototype.update = function (paddle1, paddle2) {
         if(Math.abs(downPoints - upPoints) > 2){
                 $.post("http://91.240.28.246:8090/api/finish/" + gameId);
                 shouldstop = 1;
-                document.getElementById("endinfo").textContent = "Koniec!"
+				$('#endinfo').show().html('Koniec!');
         }
         this.x_speed = 0;
         this.y_speed = 3;
@@ -191,7 +193,7 @@ Ball.prototype.update = function (paddle1, paddle2) {
     }
 };
 
-document.body.appendChild(canvas);
+//document.body.appendChild(canvas);
 animate(step);
 
 window.addEventListener("keydown", function (event) {
@@ -201,3 +203,4 @@ window.addEventListener("keydown", function (event) {
 window.addEventListener("keyup", function (event) {
     delete keysDown[event.keyCode];
 });
+

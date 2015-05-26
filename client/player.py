@@ -1,16 +1,18 @@
-import getch
 import sys
 import requests
 from sseclient import SSEClient
 import threading
 from pprint import pprint
 import json
+from time import sleep
 
 import serial
 
 ser = serial.Serial('/dev/ttyS0', 38400)
 ser.write(chr(0))
-ser.write(chr(128 + 64 + 16))
+ser.write(chr(128 + 16 + 4))
+ser.write(chr(64))
+ser.write(chr(32))
 
 address = ''
 pin = ''
@@ -20,6 +22,7 @@ score = 0
 def read_move(old_position):
     response = ser.read(1)
     if len(response) > 0:
+        ch=ord(response)
         if (ch >= 64 and ch <= 127):
             return (int) ((ch - 64) * 1.5)
 
@@ -29,12 +32,12 @@ def read_pin():
     global ser
     pin = ''
     last_knob_position = None
-
+    print "Readin pin"
     while len(pin) < 4:
         response = ser.read(1)
         if len(response)>0:
-            ch = ord(response)
-            print ch
+            ch = ord(response)            
+            #print ch
 
             # knob moved
             if (ch >= 64 and ch <= 127):
@@ -42,17 +45,20 @@ def read_pin():
 
             # button pressed
             if (ch == 128 + 64 + 2 + 1) and last_knob_position != None:
-                pin += str((int) (ch / 16) + 1)
+                pin += str((int) (last_knob_position / 16) + 1)
+                print "Ch: " + str(last_knob_position)
+                print "Pin: " + pin
 
+    print "Pin: " + pin
     return pin
 
 def set_new_score(score):
     print 'You scored: ' + str(score)
 
     # Do we want to keep this?
-    ser.write(32 + 1)
+    ser.write(chr(32 + 1))
     sleep(3)
-    ser.write(32 + 0)
+    ser.write(chr(32 + 0))
 
 def set_winner(winner):
     global ser
